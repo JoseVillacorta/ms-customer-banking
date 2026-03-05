@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ms-customer
+  config:
+    import: "optional:configserver:http://admin:local123@localhost:8888"
+  cloud:
+    config:
+      username: admin
+      password: local123
