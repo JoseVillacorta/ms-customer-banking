@@ -1,0 +1,33 @@
+package com.banking.ms_customer.entities;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Table("customers")
+public class Customer {
+
+    @Id
+    private Long id;
+
+    private String firstName;
+    private String lastName;
+    private String documentNumber;
+    private String documentType;
+    private String email;
+    private String phone;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+}
