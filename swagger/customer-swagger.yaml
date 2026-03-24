@@ -1,0 +1,271 @@
+openapi: 3.0.1
+info:
+  title: Customer Management API (WebFlux Functional)
+  description: Api para la gestion de clientes, implementada con Spring WebFlux Functional Endpoints y conectada a PostgreSQL mediante R2DBC.
+  version: v1.0.0
+servers:
+  - url: http://localhost:8080/ms-customer
+    description: URL a traves del API Gateway
+  - url: http://localhost:8081
+    description: URL directa al Microservicio (Local)
+tags:
+  - name: Customers
+    description: Operaciones CRUD para la entidad Customer.
+
+components:
+  schemas:
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID unico del cliente
+          example: 1
+        firstName:
+          type: string
+          description: Nombre del cliente
+          example: Jose
+        lastName:
+          type: string
+          description: Apellido del cliente
+          example: Villacorta
+        documentNumber:
+          type: string
+          description: Numero de documento (DNI, pasaporte, etc)
+          example: "72739435"
+        documentType:
+          type: string
+          description: Tipo de documento
+          example: "DNI"
+        email:
+          type: string
+          format: email
+          description: Correo electronico del cliente, unico en el sistema
+          example: "jose.villacorta@gmail.com"
+        phone:
+          type: string
+          description: Numero de telefono
+          example: "+51945392699"
+        status:
+          type: string
+          description: Estado del cliente ( ACTIVE, INACTIVE).
+          example: "ACTIVE"
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de creacion del registro
+          example: "2026-03-20T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Fecha de ultima actualizacion del registro
+          example: "2026-03-20T10:00:00Z"
+      required:
+        - firstName
+        - lastName
+        - documentName
+        - documentNumber
+        - email
+
+    # Esquema Generico de Respuesta Estandar (ApiResponse)
+    ApiResponseCustomer:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Customer'
+        message:
+          type: string
+          example: "OK"
+        status:
+          type: integer
+          example: 200
+
+    ApiResponseCustomerList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+        message:
+          type: string
+          example: "OK"
+        status:
+          type: integer
+          example: 200
+
+    ApiResponseError:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          example: null
+        message:
+          type: string
+          example: "Customer not found"
+        status:
+          type: integer
+          example: 404
+
+paths:
+  /api/v1/customers:
+    get:
+      tags:
+        - Customers
+      summary: Obtener todos los clientes
+      operationId: getAllCustomers
+      responses:
+        '200':
+          description: Lista de clientes obtenida con exito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomerList'
+    post:
+      tags:
+        - Customers
+      summary: Crear un nuevo cliente
+      operationId: createCustomer
+      requestBody:
+        description: Datos minimos requeridos para registrar un cliente
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  example: Yesdely
+                lastName:
+                  type: string
+                  example: Gallardo
+                documentNumber:
+                  type: string
+                  example: "78473994"
+                documentType:
+                  type: string
+                  example: "DNI"
+                email:
+                  type: string
+                  example: "yesdely@gmail.com"
+                phone:
+                  type: string
+                  example: "+51999888777"
+      responses:
+        '201':
+          description: Cliente creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomer'
+        '500':
+          description: Error de validacion o conflicto en la base de datos (Ej. Email duplicado)
+
+  /api/v1/customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Obtener cliente por ID
+      operationId: getCustomerById
+      parameters:
+        - name: id
+          in: path
+          description: ID interno del cliente a buscar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomer'
+        '404':
+          description: Cliente no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    put:
+      tags:
+        - Customers
+      summary: Actualizar datos de un cliente
+      operationId: updateCustomer
+      parameters:
+        - name: id
+          in: path
+          description: ID del cliente a modificar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Nuevos datos asigandos al cliente.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Cliente modificado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomer'
+        '404':
+          description: Cliente no encontrado
+    delete:
+      tags:
+        - Customers
+      summary: Eliminar un cliente por ID
+      operationId: deleteCustomer
+      parameters:
+        - name: id
+          in: path
+          description: ID del cliente a eliminar
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Cliente eliminado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomer'
+        '404':
+          description: Cliente no encontrado
+
+  /api/v1/customers/document/{documentNumber}:
+    get:
+      tags:
+        - Customers
+      summary: Buscar cliente mediante su Numero de Documento (DNI/Pasaporte)
+      operationId: getCustomerByDocumentNumber
+      parameters:
+        - name: documentNumber
+          in: path
+          description: El numero exacto del documento (ej. 72635418)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCustomer'
+        '404':
+          description: Cliente no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
