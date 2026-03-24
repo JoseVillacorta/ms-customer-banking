@@ -13,14 +13,14 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class CustomerRouter {
 
     @Bean
-    public RouterFunction<ServerResponse> customerRoutes(CustomerHandler handler){
+    public RouterFunction<ServerResponse> customerRoutes(CustomerHandler handler) {
         return route(
-                GET("/customers"), handler::findAll)
-                .andRoute(GET("/customers/{id}"), handler::findById)
-                .andRoute(GET("/customers/document/{documentNumber}"), handler::findByDocumentNumber)
-                .andRoute(POST("/customers"), handler::create)
-                .andRoute(PUT("/customers/{id}"), handler::update)
-                .andRoute(DELETE("/customers/{id}"), handler::delete);
-        //return RouterFunctions.route(GET("/customers/hello"), handler::hello);
+                GET("/api/v1/customers"), handler::findAll)
+                .andRoute(GET("/api/v1/customers/{id}"), handler::findById)
+                .andRoute(GET("/api/v1/customers/document/{documentNumber}"), handler::findByDocumentNumber)
+                .andRoute(POST("/api/v1/customers"), handler::create)
+                .andRoute(PUT("/api/v1/customers/{id}"), handler::update)
+                .andRoute(DELETE("/api/v1/customers/{id}"), handler::delete);
+        // return RouterFunctions.route(GET("/customers/hello"), handler::hello);
     }
 }
