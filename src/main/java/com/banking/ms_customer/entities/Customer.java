@@ -28,5 +28,6 @@ public class Customer {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    private Long zoneId;
+    private String address;
 }

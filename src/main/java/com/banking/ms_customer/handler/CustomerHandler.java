@@ -93,4 +93,15 @@ public class CustomerHandler {
                                                 .bodyValue(ApiResponse.error("Customer not found",
                                                                 HttpStatus.NOT_FOUND.value())));
         }
+
+        // Obtener clientes por zona
+        public Mono<ServerResponse> findByZoneId(ServerRequest request) {
+                Long zoneId = Long.parseLong(request.pathVariable("zoneId"));
+                return customerService.findByZoneId(zoneId)
+                                .collectList()
+                                .flatMap(customers -> ServerResponse.ok()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .bodyValue(ApiResponse.success(customers, "Ok",
+                                                                HttpStatus.OK.value())));
+        }
 }

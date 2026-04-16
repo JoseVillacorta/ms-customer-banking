@@ -16,12 +16,12 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
 
     @Override
-    public Flux<Customer> findAll(){
+    public Flux<Customer> findAll() {
         return customerRepository.findAll();
     }
 
     @Override
-    public Mono<Customer> findById(Long id){
+    public Mono<Customer> findById(Long id) {
         return customerRepository.findById(id);
     }
 
@@ -48,13 +48,21 @@ public class CustomerServiceImpl implements CustomerService {
                     existingCustomer.setEmail(customer.getEmail());
                     existingCustomer.setPhone(customer.getPhone());
                     existingCustomer.setUpdatedAt(LocalDateTime.now());
+                    existingCustomer.setAddress(customer.getAddress());
+                    existingCustomer.setZoneId(customer.getZoneId());
                     return customerRepository.save(existingCustomer);
                 });
     }
+
     @Override
     public Mono<Void> delete(Long id) {
         return customerRepository.findById(id)
                 .flatMap(customerRepository::delete);
+    }
+
+    @Override
+    public Flux<Customer> findByZoneId(Long zoneId) {
+        return customerRepository.findByZoneId(zoneId);
     }
 
 }

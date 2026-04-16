@@ -18,6 +18,7 @@ public class CustomerRouter {
                 GET("/api/v1/customers"), handler::findAll)
                 .andRoute(GET("/api/v1/customers/{id}"), handler::findById)
                 .andRoute(GET("/api/v1/customers/document/{documentNumber}"), handler::findByDocumentNumber)
+                .andRoute(GET("/api/v1/customers/zone/{zoneId}"), handler::findByZoneId)
                 .andRoute(POST("/api/v1/customers"), handler::create)
                 .andRoute(PUT("/api/v1/customers/{id}"), handler::update)
                 .andRoute(DELETE("/api/v1/customers/{id}"), handler::delete);
